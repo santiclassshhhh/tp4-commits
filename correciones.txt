@@ -1,0 +1,6 @@
+
+-hace un media cuery que centralice todo, las imagenes, el texto y las flechas de las imagenes, porque al usar la pagina en celular quedan las imagenes una abajo de otra y las flechas entre foto y foto apuntando a la derecha. Cuando al quedar una foto abajo de otra tienen que apuntar para abajo.
+
+-quedo todo bien, pero la tabla sale cortada, no esta centralizada para que se adapte a los pixeles de una pantalla de telefono
+
+-ahora el titulo sale un poco cortado del lado derecho, arreglalo
