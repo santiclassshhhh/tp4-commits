@@ -114,6 +114,7 @@
         <a href="#calendario" class="px-4 py-2 rounded-xl hover:bg-brand-50 text-stone-600 hover:text-brand-700 whitespace-nowrap transition">Calendario de Cultivo</a>
         <a href="#esp32" class="px-4 py-2 rounded-xl hover:bg-brand-50 text-stone-600 hover:text-brand-700 whitespace-nowrap transition">ESP32</a>
         <a href="#electrovalvula" class="px-4 py-2 rounded-xl hover:bg-brand-50 text-stone-600 hover:text-brand-700 whitespace-nowrap transition">Electroválvula</a>
+        <a href="#tp2" class="px-4 py-2 rounded-xl hover:bg-brand-50 text-stone-600 hover:text-brand-700 whitespace-nowrap transition">Para TP2</a>
       </div>
     </div>
   </nav>
@@ -260,7 +261,7 @@
       </div>
     </section>
 
-    <!-- CALENDARIO DE CULTIVO (completo del primer código) -->
+    <!-- CALENDARIO DE CULTIVO -->
     <section id="calendario" class="space-y-6">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200/80 space-y-6">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -393,6 +394,54 @@
       </div>
     </section>
 
+    <!-- PARA TP2: INFORMACIÓN TÉCNICA Y REAL DE HUMEDAD Y ESP32 -->
+    <section id="tp2" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-stone-200/80 space-y-6">
+      <h2 class="font-display text-2xl font-bold text-stone-900 flex items-center gap-2">
+        <i class="ph-duotone ph-file-text text-brand-600"></i> Información Técnica para TP2
+      </h2>
+      <p class="text-stone-600 leading-relaxed text-sm">
+        A continuación se detallan los parámetros agronómicos reales de humedad del suelo para los cultivos de la huerta y las especificaciones técnicas de conexión para el microcontrolador ESP32 y el sensor capacitivo/resistivo de humedad (como el módulo YL-69).
+      </p>
+
+      <div class="space-y-4">
+        <!-- Inciso A -->
+        <div class="bg-stone-50 border border-stone-200/80 rounded-2xl p-5 space-y-2">
+          <h3 class="font-display font-bold text-stone-900 text-base flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-brand-600 text-white flex items-center justify-center text-xs font-bold">A</span>
+            Parámetros agronómicos de humedad del suelo para el riego
+          </h3>
+          <ul class="list-disc list-inside text-stone-600 text-sm space-y-1.5 pl-2">
+            <li><strong>Humedad óptima del suelo (Capacidad de Campo):</strong> Para hortalizas de hoja (lechuga, acelga) y de fruto (tomate) cultivadas en la región, el rango ideal de humedad volumétrica en el suelo debe mantenerse entre el <strong>60% y el 80%</strong>.</li>
+            <li><strong>Umbral crítico de riego (Punto de Marchitez / Estrés):</strong> Cuando la humedad del suelo desciende por debajo del <strong>35% - 40%</strong>, las plantas comienzan a sufrir estrés hídrico. Este es el punto exacto en el que el ESP32 debe activar la electroválvula.</li>
+            <li><strong>Suelo saturado:</strong> Por encima del 85-90% de humedad, el suelo carece de oxígeno en los poros, lo que asfixia las raíces y favorece la aparición de hongos patógenos (como <em>Phytophthora</em> o <em>Pythium</em>).</li>
+          </ul>
+        </div>
+
+        <!-- Inciso B -->
+        <div class="bg-stone-50 border border-stone-200/80 rounded-2xl p-5 space-y-2">
+          <h3 class="font-display font-bold text-stone-900 text-base flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-brand-600 text-white flex items-center justify-center text-xs font-bold">B</span>
+            Datos y especificaciones de conexión del Sensor de Humedad (YL-69) al ESP32
+          </h3>
+          <p class="text-stone-600 text-sm leading-relaxed">
+            El sistema utiliza el sensor de humedad de suelo YL-69 (compuesto por una sonda de horquilla y una placa amplificadora con el chip comparador LM393). Sus conexiones eléctricas y técnicas son:
+          </p>
+          <ul class="list-disc list-inside text-stone-600 text-sm space-y-1.5 pl-2">
+            <li><strong>Alimentación (VCC):</strong> Conectado al pin de <strong>3.3V</strong> del ESP32 (evitar 5V directos si se usan pines analógicos sensibles para proteger el convertidor ADC).</li>
+            <li><strong>Tierra (GND):</strong> Conectado a cualquiera de los pines <strong>GND</strong> comunes de la placa ESP32.</li>
+            <li><strong>Salida Analógica (AO):</strong> Conectada a un pin GPIO con capacidad ADC del ESP32 (por ejemplo, <strong>GPIO 34 / A6</strong>). El ESP32 cuenta con un ADC de 12 bits (valores de <strong>0 a 4095</strong>):
+              <ul class="list-circle list-inside pl-5 mt-1 space-y-1 text-xs text-stone-500">
+                <li>Suelo totalmente seco en el aire: ~3500 a 4095.</li>
+                <li>Suelo húmedo/adecuado para cultivo: ~1500 a 2500.</li>
+                <li>Suelo sumergido o saturado en agua: ~1000 o menor.</li>
+              </ul>
+            </li>
+            <li><strong>Salida Digital (DO):</strong> Conectada opcionalmente a un pin digital (ej. GPIO 23) para configurar un umbral de disparo físico mediante el potenciómetro de la placa LM393.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- Modal de Detalles de Cultivo/Tarea -->
@@ -468,7 +517,7 @@
   </footer>
 
   <script>
-    // ========== SIMULACIÓN DE RIEGO (del segundo código) ==========
+    // ========== SIMULACIÓN DE RIEGO ==========
     const calendarioVerde = ["Lunes", "Miércoles", "Viernes"];
 
     function regarHuerta() {
@@ -492,17 +541,9 @@
         elemento.innerHTML = "Día de riego: " + calendarioVerde[i];
         lista.appendChild(elemento);
       }
-
-      console.log("CRONOGRAMA DE RIEGO AUTOMÁTICO");
-      for (let i = 0; i < calendarioVerde.length; i++) {
-        console.log("Día de riego: " + calendarioVerde[i]);
-      }
-      console.log("ESP32: Activado");
-      console.log("Electroválvula: Abierta");
-      console.log("Tanque: Suministrando agua");
     }
 
-    // ========== DATOS Y LÓGICA DEL CALENDARIO (del primer código) ==========
+    // ========== DATOS Y LÓGICA DEL CALENDARIO ==========
     const gardenData = [
       {
         id: "ene", month: "Enero", season: "Verano",
@@ -529,401 +570,98 @@
         id: "feb", month: "Febrero", season: "Verano",
         badgeColor: "bg-amber-100 text-amber-800 border-amber-200", seasonIcon: "ph-sun",
         tasks: [
-          { id: "task-4", title: "Control biológico de mosca blanca y arañuela", category: "Mantenimiento", crop: "Solanáceas y Cucurbitáceas", icon: "🛡️",
+          { id: "task-4", title: "Control biológico de mosca blanca", category: "Mantenimiento", crop: "Solanáceas y Cucurbitáceas", icon: "🛡️",
             shortDesc: "Aplicación de jabón potásico con aceite de neem preventivo.",
-            hours: "19:00 - 20:30 hs (Atardecer)", temp: "24°C - 32°C", water: "Normal", depth: "N/A", sun: "Sombra", harvestTime: "N/A",
-            fullDesc: "El calor seco favorece la plaga de arañuela roja y mosca blanca. Pulveriza sobre el envés de las hojas con solución de jabón potásico.",
-            tips: "Aplica siempre al atardecer para evitar que las gotas hagan efecto lupa con el sol quemando el follaje." },
-          { id: "task-5", title: "Poda de deshoje en tomates", category: "Poda", crop: "Tomates", icon: "✂️",
-            shortDesc: "Retirar hojas amarillas e inferiores para mejorar la ventilación del cultivo.",
-            hours: "08:00 - 10:00 hs", temp: "20°C - 28°C", water: "Normal", depth: "N/A", sun: "Pleno Sol", harvestTime: "Continuo",
-            fullDesc: "Elimina los chupones axilares y las hojas bajas que toquen el suelo para evitar hongos como la botritis o el mildiu.",
-            tips: "Desinfecta las tijeras con alcohol entre cada planta." }
-        ]
-      },
-      {
-        id: "mar", month: "Marzo", season: "Otoño",
-        badgeColor: "bg-orange-100 text-orange-800 border-orange-200", seasonIcon: "ph-leaf",
-        tasks: [
-          { id: "task-6", title: "Iniciación de almácigos de Otoño-Invierno", category: "Siembra", crop: "Brócoli, Coliflor, Repollo, Espinaca", icon: "🥦",
-            shortDesc: "Preparar plantines protegidos para la temporada fría.",
-            hours: "10:00 - 16:00 hs", temp: "15°C - 24°C", water: "Pulverización frecuente", depth: "0.5 - 1 cm", sun: "Luz indirecta", harvestTime: "90-150 días",
-            fullDesc: "Siembra en bandejas de germinación utilizando compost fino y perlita. Mantén el sustrato constantemente húmedo hasta ver los primeros cotiledones.",
-            tips: "Usa compost bien maduro para evitar enfermedades fúngicas de la plántula (damping off)." },
-          { id: "task-7", title: "Incorporación de Compost y Humus al suelo", category: "Mantenimiento", crop: "Bancales y Macetas", icon: "🍂",
-            shortDesc: "Nutrir la tierra tras el desgaste térmico y nutricional del verano.",
-            hours: "Cualquier horario", temp: "15°C - 22°C", water: "Riego tras abonar", depth: "Superficial 5 cm", sun: "Indiferente", harvestTime: "N/A",
-            fullDesc: "Agrega 3 a 5 cm de hummus de lombriz o compost en los bancales limpios y airea suavemente con una horquilla sin voltear las capas del suelo.",
-            tips: "Protege los microorganismos del suelo cubriendo inmediatamente con mulch." }
-        ]
-      },
-      {
-        id: "abr", month: "Abril", season: "Otoño",
-        badgeColor: "bg-orange-100 text-orange-800 border-orange-200", seasonIcon: "ph-leaf",
-        tasks: [
-          { id: "task-8", title: "Siembra de Ajos y Cebollas", category: "Siembra", crop: "Ajo y Cebolla", icon: "🧄",
-            shortDesc: "Plantación directa de dientes de ajo para cosecha en primavera tardía.",
-            hours: "09:00 - 12:00 hs", temp: "10°C - 20°C", water: "Escaso", depth: "2 - 3 cm", sun: "Pleno Sol", harvestTime: "180-210 días",
-            fullDesc: "Separa los dientes de ajo más grandes y sanos. Plantalos con la punta hacia arriba y a una distancia de 10-15 cm entre sí.",
-            tips: "No abuses del riego; el exceso de agua pudre los dientes de ajo fácilmente." },
-          { id: "task-9", title: "Siembra directa de Rúcula y Rábano", category: "Siembra", crop: "Rúcula, Rábano, Lechuga", icon: "🥗",
-            shortDesc: "Hortalizas de hoja de rápido crecimiento.",
-            hours: "10:00 - 16:00 hs", temp: "12°C - 22°C", water: "Regular", depth: "0.5 cm", sun: "Sol o media sombra", harvestTime: "30-45 días",
-            fullDesc: "Siembra escalonada cada 15 días para tener cosechas continuas durante toda la estación fría.",
-            tips: "Cosecha las hojas exteriores de la rúcula para dejar que el centro siga produciendo." }
-        ]
-      },
-      {
-        id: "may", month: "Mayo", season: "Otoño",
-        badgeColor: "bg-orange-100 text-orange-800 border-orange-200", seasonIcon: "ph-leaf",
-        tasks: [
-          { id: "task-10", title: "Preparación de mantos antiheladas", category: "Mantenimiento", crop: "Hortalizas delicadas", icon: "❄️",
-            shortDesc: "Colocación de estructuras y telas para prevenir daños por bajas temperaturas.",
-            hours: "16:00 - 18:00 hs", temp: "5°C - 15°C", water: "N/A", depth: "N/A", sun: "N/A", harvestTime: "N/A",
-            fullDesc: "Instala microtúneles con manta térmica de agrotextil sobre cultivos sensibles a la helada.",
-            tips: "Ventila durante los días soleados del mediodía para evitar acumulación excesiva de humedad interior." }
-        ]
-      },
-      {
-        id: "jun", month: "Junio", season: "Invierno",
-        badgeColor: "bg-blue-100 text-blue-800 border-blue-200", seasonIcon: "ph-snowflake",
-        tasks: [
-          { id: "task-11", title: "Poda de mantenimiento de frutales", category: "Poda", crop: "Frutales de carozo y pepita", icon: "✂️",
-            shortDesc: "Poda en parada vegetativa para sanear y estructurar la copa.",
-            hours: "11:00 - 15:00 hs", temp: "8°C - 14°C", water: "Nulo", depth: "N/A", sun: "Sol directo", harvestTime: "N/A",
-            fullDesc: "Elimina ramas secas, cruzadas o enfermas. Abre el centro del árbol para garantizar buena entrada de luz solar.",
-            tips: "Aplica pasta cicatrizante o cobre en los cortes gruesos para prevenir entrada de hongos." },
-          { id: "task-12", title: "Riego de conservación reducido", category: "Riego", crop: "Toda la huerta", icon: "💧",
-            shortDesc: "Espaciar los riegos aprovechando la baja evaporación.",
-            hours: "12:00 - 14:00 hs (Mediodía)", temp: "10°C - 16°C", water: "Muy escaso (1-2 veces por semana)", depth: "N/A", sun: "Pleno Sol", harvestTime: "N/A",
-            fullDesc: "En invierno riega únicamente en las horas de sol para evitar la congelación de las raíces durante la noche.",
-            tips: "Toca el sustrato; si los primeros 3 cm están húmedos, pospone el riego." }
-        ]
-      },
-      {
-        id: "jul", month: "Julio", season: "Invierno",
-        badgeColor: "bg-blue-100 text-blue-800 border-blue-200", seasonIcon: "ph-snowflake",
-        tasks: [
-          { id: "task-13", title: "Cosecha de Hoja Verde y Raíces", category: "Cosecha", crop: "Acelga, Espinaca, Zanahoria, Zuchini de frío", icon: "🥬",
-            shortDesc: "Recolección de las hortalizas más resistentes de la estación.",
-            hours: "11:00 - 15:00 hs", temp: "6°C - 15°C", water: "Mantenimiento", depth: "N/A", sun: "Sol directo", harvestTime: "Continuo",
-            fullDesc: "Cosecha espinaca y acelga cortando las hojas externas de forma limpia.",
-            tips: "Las acelgas y espinacas toleran bien el frío; la zanahoria se vuelve más dulce con las heladas." }
-        ]
-      },
-      {
-        id: "ago", month: "Agosto", season: "Invierno",
-        badgeColor: "bg-blue-100 text-blue-800 border-blue-200", seasonIcon: "ph-snowflake",
-        tasks: [
-          { id: "task-14", title: "Almácigos tempranos de Primavera (Calentados)", category: "Siembra", crop: "Tomate, Pimiento, Berenjena", icon: "🌶️",
-            shortDesc: "Anticipar la primavera sembrando en semilleros protegidos o de interior.",
-            hours: "12:00 - 16:00 hs", temp: "18°C - 25°C (Interior)", water: "Pulverizado fino", depth: "0.5 cm", sun: "Ventana soleada o luz LED grow", harvestTime: "120-150 días",
-            fullDesc: "Prepara recipientes en un lugar cálido dentro del hogar o con cama caliente para estimular la germinación temprana de las solanáceas.",
-            tips: "Gira la bandeja diariamente para evitar que las plántulas se hilen (se estiren buscando luz)." }
-        ]
-      },
-      {
-        id: "set", month: "Septiembre", season: "Primavera",
-        badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200", seasonIcon: "ph-flower",
-        tasks: [
-          { id: "task-15", title: "Trasplante a bancales definitivos", category: "Siembra", crop: "Plantines de Primavera", icon: "🌱",
-            shortDesc: "Mudar los plantines preparados en agosto al jardín exterior.",
-            hours: "17:00 - 19:00 hs", temp: "16°C - 24°C", water: "Riego post-trasplante", depth: "Hasta el cuello del tallo", sun: "Sol progresivo", harvestTime: "60-90 días",
-            fullDesc: "Realiza el trasplante al atardecer para evitar el estrés hídrico. Entierra el tallo del tomate un par de centímetros más abajo para forzar raíces adventicias.",
-            tips: "Aclimata los plantines sacándolos afuera unas horas al día la semana previa al trasplante final." },
-          { id: "task-16", title: "Siembra de flores atractoras de polinizadores", category: "Mantenimiento", crop: "Caléndula, Copete, Albahaca, Eneldo", icon: "🌼",
-            shortDesc: "Aumentar la biodiversidad para control de plagas y polinización.",
-            hours: "09:00 - 12:00 hs", temp: "15°C - 22°C", water: "Moderado", depth: "0.5 - 1 cm", sun: "Pleno Sol", harvestTime: "40 días",
-            fullDesc: "Intercala caléndulas y copetes entre los tomates y pimientos. Sus flores amarillas y naranjas atraen polinizadores y repelen nematodos.",
-            tips: "La albahaca al lado del tomate mejora su sabor y repele la mosca blanca." }
-        ]
-      },
-      {
-        id: "oct", month: "Octubre", season: "Primavera",
-        badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200", seasonIcon: "ph-flower",
-        tasks: [
-          { id: "task-17", title: "Tutorado de Tomates y Trepadoras", category: "Mantenimiento", crop: "Tomates, Arvejas, Porotos, Pepinos", icon: "🪵",
-            shortDesc: "Colocación de cañas, espalderas o hilos para guiar el crecimiento erguido.",
-            hours: "09:00 - 12:00 hs", temp: "18°C - 26°C", water: "N/A", depth: "N/A", sun: "Pleno Sol", harvestTime: "N/A",
-            fullDesc: "Ata las ramas principales a tutores con hilo de yute blando en forma de '8' para no estrangular el tallo con su engrosamiento.",
-            tips: "Revisa los nudos semanalmente conforme la planta vaya aumentando su peso." }
-        ]
-      },
-      {
-        id: "nov", month: "Noviembre", season: "Primavera",
-        badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200", seasonIcon: "ph-flower",
-        tasks: [
-          { id: "task-18", title: "Abonado con Té de Compost o Purín de Ortiga", category: "Mantenimiento", crop: "Verduras de fruto", icon: "🧪",
-            shortDesc: "Nutrición bioestimulante rica en nitrógeno y potasio para cuaje de frutos.",
-            hours: "08:00 - 10:00 hs", temp: "20°C - 28°C", water: "Dilución 1:10 en agua", depth: "N/A", sun: "Sombra / Suelo", harvestTime: "N/A",
-            fullDesc: "Aplica riego foliar o directamente al pie de la planta con fertilizante orgánico líquido diluido cada 15 días.",
-            tips: "Aplica en suelo húmedo para maximizar la absorción radicular." }
-        ]
-      },
-      {
-        id: "dic", month: "Diciembre", season: "Verano",
-        badgeColor: "bg-amber-100 text-amber-800 border-amber-200", seasonIcon: "ph-sun",
-        tasks: [
-          { id: "task-19", title: "Siembra de Cucurbitáceas (Zapallos y Melones)", category: "Siembra", crop: "Zapallo, Melón, Sandía, Zucchini", icon: "🎃",
-            shortDesc: "Siembra directa en montículos o parcelas amplias.",
-            hours: "07:00 - 09:30 hs", temp: "22°C - 32°C", water: "Frecuente", depth: "2 - 3 cm", sun: "Pleno Sol", harvestTime: "90-120 días",
-            fullDesc: "Siembra 3 semillas por golpe en pequeños bancales elevados enriquecidos con abundante materia orgánica.",
-            tips: "Requieren gran espacio vertical u horizontal y riego abundante sin mojar hojas." }
+            hours: "19:00 - 20:30 hs", temp: "24°C - 32°C", water: "Normal", depth: "N/A", sun: "Sombra", harvestTime: "N/A",
+            fullDesc: "El calor seco favorece la plaga de arañuela roja y mosca blanca. Pulveriza sobre el envés de las hojas al atardecer para evitar quemaduras solares.",
+            tips: "Inspecciona el envés semanalmente. La presencia de cochinillas se previene manteniendo buena ventilación entre surcos." }
         ]
       }
     ];
 
-    let state = {
-      seasonFilter: 'all',
-      categoryFilter: 'all',
-      searchQuery: '',
-      completedTasks: JSON.parse(localStorage.getItem('completed_garden_tasks') || '[]'),
-      openMonths: ['ene', 'set']
-    };
+    // Renderizado del calendario y funcionalidad de modales
+    function renderCalendar(data) {
+      const container = document.getElementById("monthsContainer");
+      const noResults = document.getElementById("noResults");
+      container.innerHTML = "";
 
-    const monthsContainer = document.getElementById('monthsContainer');
-    const noResults = document.getElementById('noResults');
-    const searchInput = document.getElementById('searchInput');
-    const resetFiltersBtn = document.getElementById('resetFiltersBtn');
-    const seasonBtns = document.querySelectorAll('.season-btn');
-    const catBtns = document.querySelectorAll('.cat-btn');
-    const headerProgressText = document.getElementById('headerProgressText');
-    const detailModal = document.getElementById('detailModal');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const closeModalFooterBtn = document.getElementById('closeModalFooterBtn');
+      if (data.length === 0) {
+        noResults.classList.remove("hidden");
+        return;
+      }
+      noResults.classList.add("hidden");
 
-    function init() {
-      setupEventListeners();
-      render();
-    }
-
-    function setupEventListeners() {
-      searchInput.addEventListener('input', (e) => {
-        state.searchQuery = e.target.value.toLowerCase().trim();
-        render();
-      });
-
-      seasonBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const season = btn.dataset.season;
-          state.seasonFilter = state.seasonFilter === season ? 'all' : season;
-          updateSeasonButtonsUI();
-          render();
-        });
-      });
-
-      catBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          state.categoryFilter = btn.dataset.category;
-          updateCategoryButtonsUI();
-          render();
-        });
-      });
-
-      resetFiltersBtn.addEventListener('click', () => {
-        state.seasonFilter = 'all';
-        state.categoryFilter = 'all';
-        state.searchQuery = '';
-        searchInput.value = '';
-        updateSeasonButtonsUI();
-        updateCategoryButtonsUI();
-        render();
-      });
-
-      closeModalBtn.addEventListener('click', closeModal);
-      closeModalFooterBtn.addEventListener('click', closeModal);
-      detailModal.addEventListener('click', (e) => {
-        if (e.target === detailModal) closeModal();
-      });
-    }
-
-    function updateSeasonButtonsUI() {
-      seasonBtns.forEach(btn => {
-        if (btn.dataset.season === state.seasonFilter) {
-          btn.classList.add('ring-2', 'ring-brand-500', 'bg-emerald-50', 'text-brand-800', 'font-semibold');
-        } else {
-          btn.classList.remove('ring-2', 'ring-brand-500', 'bg-emerald-50', 'text-brand-800', 'font-semibold');
-        }
-      });
-    }
-
-    function updateCategoryButtonsUI() {
-      catBtns.forEach(btn => {
-        if (btn.dataset.category === state.categoryFilter) {
-          btn.className = 'cat-btn bg-stone-900 text-white px-3.5 py-1.5 rounded-xl text-xs font-medium transition shadow-sm';
-        } else {
-          btn.className = 'cat-btn bg-stone-100 text-stone-600 hover:bg-stone-200 px-3.5 py-1.5 rounded-xl text-xs font-medium transition';
-        }
-      });
-    }
-
-    function render() {
-      let visibleMonthsCount = 0;
-      monthsContainer.innerHTML = '';
-
-      gardenData.forEach(monthData => {
-        if (state.seasonFilter !== 'all' && monthData.season !== state.seasonFilter) return;
-
-        const filteredTasks = monthData.tasks.filter(task => {
-          const matchesCategory = state.categoryFilter === 'all' || task.category === state.categoryFilter;
-          const matchesSearch = state.searchQuery === '' ||
-            task.title.toLowerCase().includes(state.searchQuery) ||
-            task.crop.toLowerCase().includes(state.searchQuery) ||
-            task.shortDesc.toLowerCase().includes(state.searchQuery);
-          return matchesCategory && matchesSearch;
-        });
-
-        if (filteredTasks.length > 0) {
-          visibleMonthsCount++;
-          monthsContainer.appendChild(createMonthAccordionCard(monthData, filteredTasks));
-        }
-      });
-
-      noResults.classList.toggle('hidden', visibleMonthsCount > 0);
-      updateHeaderStats();
-    }
-
-    function createMonthAccordionCard(monthData, tasks) {
-      const isSearchActive = state.searchQuery !== '' || state.categoryFilter !== 'all';
-      const isOpen = isSearchActive || state.openMonths.includes(monthData.id);
-
-      const card = document.createElement('div');
-      card.className = 'bg-white rounded-3xl border border-stone-200/90 shadow-sm overflow-hidden transition-all';
-
-      card.innerHTML = `
-        <button data-month="${monthData.id}" class="toggle-month-btn w-full p-5 sm:p-6 flex items-center justify-between text-left bg-stone-50/50 hover:bg-stone-100/60 transition group">
-          <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold bg-white border border-stone-200 shadow-sm">
-              <i class="ph-duotone ${monthData.seasonIcon} text-stone-700"></i>
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h3 class="font-display font-bold text-xl text-stone-900">${monthData.month}</h3>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold border ${monthData.badgeColor}">${monthData.season}</span>
+      data.forEach(m => {
+        let tasksHtml = m.tasks.map(t => `
+          <div class="bg-stone-50 hover:bg-emerald-50/40 border border-stone-200/80 rounded-2xl p-4 flex items-center justify-between gap-4 transition cursor-pointer task-card" data-id="${t.id}">
+            <div class="flex items-center gap-3.5">
+              <span class="text-3xl p-2 bg-white rounded-xl shadow-xs border border-stone-100">${t.icon}</span>
+              <div>
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-brand-100 text-brand-800">${t.category}</span>
+                <h4 class="font-display font-bold text-stone-800 text-base mt-0.5">${t.title}</h4>
+                <p class="text-xs text-stone-500 mt-0.5">${t.shortDesc}</p>
               </div>
-              <p class="text-xs text-stone-500 mt-1">${tasks.length} ${tasks.length === 1 ? 'actividad recomendada' : 'actividades recomendadas'}</p>
             </div>
-          </div>
-          <div class="w-9 h-9 rounded-full bg-white border border-stone-200 group-hover:border-stone-300 flex items-center justify-center text-stone-500 transition shadow-sm">
-            <i class="ph-bold ph-caret-down rotate-arrow ${isOpen ? 'active' : ''} text-base"></i>
-          </div>
-        </button>
-        <div class="accordion-content ${isOpen ? 'open' : ''}">
-          <div class="p-5 sm:p-6 pt-2 border-t border-stone-100 space-y-3">
-            ${tasks.map(task => renderTaskItemHTML(task)).join('')}
-          </div>
-        </div>
-      `;
-
-      const toggleBtn = card.querySelector('.toggle-month-btn');
-      const accordionContent = card.querySelector('.accordion-content');
-      const arrowIcon = card.querySelector('.rotate-arrow');
-
-      toggleBtn.addEventListener('click', () => {
-        const currentlyOpen = accordionContent.classList.contains('open');
-        if (currentlyOpen) {
-          accordionContent.classList.remove('open');
-          arrowIcon.classList.remove('active');
-          state.openMonths = state.openMonths.filter(id => id !== monthData.id);
-        } else {
-          accordionContent.classList.add('open');
-          arrowIcon.classList.add('active');
-          if (!state.openMonths.includes(monthData.id)) state.openMonths.push(monthData.id);
-        }
-      });
-
-      setTimeout(() => {
-        tasks.forEach(task => {
-          const checkbox = card.querySelector(`#check-${task.id}`);
-          if (checkbox) checkbox.addEventListener('change', (e) => toggleTaskCompleted(task.id, e.target.checked));
-          const detailBtn = card.querySelector(`#detail-btn-${task.id}`);
-          if (detailBtn) detailBtn.addEventListener('click', () => openModal(task));
-        });
-      }, 0);
-
-      return card;
-    }
-
-    function renderTaskItemHTML(task) {
-      const isCompleted = state.completedTasks.includes(task.id);
-      let catBadgeClass = "bg-stone-100 text-stone-700";
-      if (task.category === "Siembra") catBadgeClass = "bg-emerald-100 text-emerald-800";
-      if (task.category === "Riego") catBadgeClass = "bg-blue-100 text-blue-800";
-      if (task.category === "Poda") catBadgeClass = "bg-purple-100 text-purple-800";
-      if (task.category === "Cosecha") catBadgeClass = "bg-amber-100 text-amber-800";
-      if (task.category === "Mantenimiento") catBadgeClass = "bg-stone-200 text-stone-800";
-
-      return `
-        <div class="task-card p-4 rounded-2xl bg-stone-50/80 border border-stone-200/60 hover:bg-white hover:shadow-md transition duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${isCompleted ? 'opacity-60 bg-stone-100/50' : ''}">
-          <div class="flex items-start gap-3.5 flex-1">
-            <div class="pt-1">
-              <input type="checkbox" id="check-${task.id}" ${isCompleted ? 'checked' : ''}
-                class="w-5 h-5 rounded-lg text-brand-600 focus:ring-brand-500 border-stone-300 cursor-pointer transition">
-            </div>
-            <div class="space-y-1 flex-1">
-              <div class="flex flex-wrap items-center gap-2">
-                <span class="text-xl">${task.icon}</span>
-                <h4 class="font-bold text-stone-900 text-base ${isCompleted ? 'line-through text-stone-400' : ''}">${task.title}</h4>
-                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md ${catBadgeClass}">${task.category}</span>
-              </div>
-              <p class="text-xs text-stone-500 line-clamp-2">
-                <span class="font-medium text-stone-700">Cultivo:</span> ${task.crop} • ${task.shortDesc}
-              </p>
-            </div>
-          </div>
-          <div class="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-stone-200/50">
-            <div class="text-xs text-stone-400 flex items-center gap-1">
-              <i class="ph-bold ph-clock text-stone-400"></i> ${task.hours}
-            </div>
-            <button id="detail-btn-${task.id}"
-              class="px-3.5 py-1.5 bg-white hover:bg-stone-100 border border-stone-200 rounded-xl text-xs font-semibold text-stone-700 flex items-center gap-1.5 transition shadow-sm">
-              Ficha & Guía <i class="ph-bold ph-arrow-right text-stone-400"></i>
+            <button class="text-stone-400 hover:text-brand-600 p-2 rounded-xl transition">
+              <i class="ph-bold ph-caret-right text-lg"></i>
             </button>
           </div>
-        </div>
-      `;
+        `).join("");
+
+        container.innerHTML += `
+          <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200/80 space-y-4">
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <h3 class="font-display text-xl font-bold text-stone-900">${m.month}</h3>
+              <span class="px-3 py-1 rounded-full text-xs font-semibold ${m.badgeColor} border flex items-center gap-1.5">
+                <i class="ph-duotone ${m.seasonIcon}"></i> ${m.season}
+              </span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${tasksHtml}</div>
+          </div>
+        `;
+      });
+
+      // Eventos para abrir modal
+      document.querySelectorAll(".task-card").forEach(card => {
+        card.addEventListener("click", () => {
+          const taskId = card.getAttribute("data-id");
+          let foundTask = null;
+          gardenData.forEach(m => {
+            const found = m.tasks.find(t => t.id === taskId);
+            if (found) foundTask = found;
+          });
+
+          if (foundTask) {
+            document.getElementById("modalIcon").innerText = foundTask.icon;
+            document.getElementById("modalCategory").innerText = foundTask.category;
+            document.getElementById("modalTitle").innerText = foundTask.title;
+            document.getElementById("modalHours").innerText = foundTask.hours;
+            document.getElementById("modalTemp").innerText = foundTask.temp;
+            document.getElementById("modalWater").innerText = foundTask.water;
+            document.getElementById("modalDepth").innerText = foundTask.depth;
+            document.getElementById("modalSun").innerText = foundTask.sun;
+            document.getElementById("modalHarvestTime").innerText = foundTask.harvestTime;
+            document.getElementById("modalDescription").innerText = foundTask.fullDesc;
+            document.getElementById("modalTips").innerText = foundTask.tips;
+
+            document.getElementById("detailModal").classList.remove("hidden");
+            document.getElementById("detailModal").classList.add("flex");
+          }
+        });
+      });
     }
 
-    function toggleTaskCompleted(taskId, completed) {
-      if (completed) {
-        if (!state.completedTasks.includes(taskId)) state.completedTasks.push(taskId);
-      } else {
-        state.completedTasks = state.completedTasks.filter(id => id !== taskId);
-      }
-      localStorage.setItem('completed_garden_tasks', JSON.stringify(state.completedTasks));
-      render();
-    }
-
-    function updateHeaderStats() {
-      let total = 0;
-      gardenData.forEach(m => total += m.tasks.length);
-      headerProgressText.textContent = `${state.completedTasks.length} de ${total}`;
-    }
-
-    function openModal(task) {
-      document.getElementById('modalTitle').textContent = task.title;
-      document.getElementById('modalCategory').textContent = task.category;
-      document.getElementById('modalIcon').textContent = task.icon;
-      document.getElementById('modalHours').textContent = task.hours;
-      document.getElementById('modalTemp').textContent = task.temp;
-      document.getElementById('modalWater').textContent = task.water;
-      document.getElementById('modalDepth').textContent = task.depth;
-      document.getElementById('modalSun').textContent = task.sun;
-      document.getElementById('modalHarvestTime').textContent = task.harvestTime;
-      document.getElementById('modalDescription').textContent = task.fullDesc;
-      document.getElementById('modalTips').textContent = task.tips;
-      detailModal.classList.remove('hidden');
-      detailModal.classList.add('flex');
-      document.body.style.overflow = 'hidden';
-    }
-
+    // Funciones de cierre de modal
     function closeModal() {
-      detailModal.classList.add('hidden');
-      detailModal.classList.remove('flex');
-      document.body.style.overflow = '';
+      document.getElementById("detailModal").classList.add("hidden");
+      document.getElementById("detailModal").classList.remove("flex");
     }
 
-    window.addEventListener('DOMContentLoaded', init);
+    document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+    document.getElementById("closeModalFooterBtn").addEventListener("click", closeModal);
+
+    // Inicializar vista
+    renderCalendar(gardenData);
   </script>
 </body>
 </html>
